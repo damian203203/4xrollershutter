@@ -78,20 +78,29 @@ void connect_to_supla()
         "7126");               // Location Password
 }
 
+void add_devices_to_supla()
+{
+    SuplaDevice.setDigitalWriteFuncImpl(&customDigitalWrite);
+    SuplaDevice.setDigitalReadFuncImpl(&customDigitalRead);
+
+    SuplaDevice.addRollerShutterRelays(
+        101, // Relay 1 (if shift register add 101) 
+        102);
+    SuplaDevice.setRollerShutterButtons(
+        0, // channel
+        4, // button 1
+        5); // button 2`
+
+    SuplaDevice.addRelay()
+
+}
+
 void setup() 
 {
     Serial.begin(115200);
     delay(10);
 
-    SuplaDevice.setDigitalWriteFuncImpl(&customDigitalWrite);
-    SuplaDevice.setDigitalReadFuncImpl(&customDigitalRead);
-
-    SuplaDevice.addRollerShutterRelays(14, 2);
-    SuplaDevice.setRollerShutterButtons(0, 13, 12);
-
-    SuplaDevice.addRollerShutterRelays(101, 102);
-    SuplaDevice.setRollerShutterButtons(1, 4, 5);
-
+    add_devices_to_supla();
     connect_to_supla();
 }
 
