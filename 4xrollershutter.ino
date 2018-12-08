@@ -18,12 +18,23 @@ struct ShiftRegisterWrapper
     }
     void set(uint8_t pin, uint8_t val)
     {
+        Serial.print("SET, pin: ");
+        Serial.print(pin);
+        Serial.print(", val: ");
+        Serial.print(val);
+        Serial.print("\n");
         shift_register.set(pin, val);
         mem[pin] = val;
     }
     int get(uint8_t pin)
     {
-        return mem[pin];
+        int val = mem[pin];
+        Serial.print("GET, pin: ");
+        Serial.print(pin);
+        Serial.print(", val: ");
+        Serial.print(0);
+        Serial.print("\n");
+        return val;
     }
 } shift_register_with_memory;
 
@@ -31,50 +42,23 @@ void customDigitalWrite(int channelNumber, uint8_t pin, uint8_t val)
 {
     if (pin > 100)
     {
-        int shift_register_pin = pin - 101;
-
-        Serial.print("Shift regiter write: channelNumber: ");
-        Serial.print(channelNumber);
-        Serial.print(", PIN: ");
-        Serial.print(pin);
-        Serial.print(", value: ");
-        Serial.print(val);
-
-        Serial.print(", Shift register PIN: ");
-        Serial.print(shift_register_pin);
-
-        shift_register_with_memory.set(shift_register_pin, val);
+        shift_register_with_memory.set(pin - 101, val);
     }
     else
     {
-        Serial.print("Standard digital write: channelNumber: ");
-        Serial.print(channelNumber);
-        Serial.print(", PIN: ");
-        Serial.print(pin);
-        Serial.print(", value: ");
-        Serial.print(val);
         digitalWrite(pin, val);
     }
 }
 
 int customDigitalRead(int channelNumber, uint8_t pin)
 {
-    Serial.print("Digital read called, channelNumber: ");
-    Serial.print(channelNumber);
-    Serial.print(", PIN: ");
-    Serial.print(pin);
-    Serial.print("\n");
     if (pin > 100)
     {
-        Serial.print("Digital read from Shift register");
-        return shift_register_with_memory.get(pin);
+        return shift_register_with_memory.get(pin - 101);
     }
     else
     {
-        int ret = digitalRead(pin);
-        Serial.print("return: ");
-        Serial.print(ret);
-        return ret;
+        return digitalRead(pin);
     }
 }
 
@@ -107,9 +91,8 @@ void setup()
     SuplaDevice.addRollerShutterRelays(14, 2);
     SuplaDevice.setRollerShutterButtons(0, 13, 12);
 
-//    SuplaDevice.addRollerShutterRelays(101, 102);
-//    SuplaDevice.setRollerShutterButtons(1, 4, 5);
-
+    SuplaDevice.addRollerShutterRelays(101, 102);
+    SuplaDevice.setRollerShutterButtons(1, 4, 5);
 
     connect_to_supla();
 }
