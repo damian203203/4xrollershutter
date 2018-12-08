@@ -6,35 +6,33 @@
 #include <ShiftRegister74HC595.h>
 
 WiFiClient client;
-ShiftRegister74HC595 shift_register(1, 15, 16, 0); 
 
-struct ShiftRegisterWrapper
+struct ShiftRegisterWithMemoryState
 {
-    int mem[8];
-    ShiftRegisterWrapper()
+    static const uint8_t NR_OF_REGISTERS = 1;
+    static const uint8_t DATA_PIN = 15;
+    static const uint8_t CLOCK_PIN = 16;
+    static const uint8_t LATCH_PIN = 1;
+
+    static const uint8_t MEMORY_STATE_SIZE = NR_OF_REGISTERS * 8;
+    int memory_state[MEMORY_STATE_SIZE];
+    
+    ShiftRegister74HC595 shift_register = ShiftRegister74HC595(
+        NR_OF_REGISTERS, DATA_PIN, CLOCK_PIN, LATCH_PIN);
+
+    ShiftRegisterWithMemoryState()
     {
-        for (int i=0; i < 8; i++)
-            mem[i] = 0;
+        for (int i=0; i < MEMORY_STATE_SIZE; i++)
+            memory_state[i] = 0;
     }
     void set(uint8_t pin, uint8_t val)
     {
-        Serial.print("SET, pin: ");
-        Serial.print(pin);
-        Serial.print(", val: ");
-        Serial.print(val);
-        Serial.print("\n");
         shift_register.set(pin, val);
-        mem[pin] = val;
+        memory_state[pin] = val;
     }
     int get(uint8_t pin)
     {
-        int val = mem[pin];
-        Serial.print("GET, pin: ");
-        Serial.print(pin);
-        Serial.print(", val: ");
-        Serial.print(0);
-        Serial.print("\n");
-        return val;
+        return memory_state[pin];
     }
 } shift_register_with_memory;
 
