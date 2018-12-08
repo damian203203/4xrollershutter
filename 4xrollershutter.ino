@@ -9,10 +9,10 @@ WiFiClient client;
 
 struct ShiftRegisterWithMemoryState
 {
-    static const uint8_t NR_OF_REGISTERS = 1;
-    static const uint8_t DATA_PIN = 15;
-    static const uint8_t CLOCK_PIN = 16;
-    static const uint8_t LATCH_PIN = 1;
+    static const uint8_t NR_OF_REGISTERS = 1;//ustaw
+    static const uint8_t DATA_PIN = 15;//ustaw
+    static const uint8_t CLOCK_PIN = 16;//ustaw
+    static const uint8_t LATCH_PIN = 1;//ustaw
 
     static const uint8_t MEMORY_STATE_SIZE = NR_OF_REGISTERS * 8;
     int memory_state[MEMORY_STATE_SIZE];
@@ -71,6 +71,11 @@ void connect_to_supla()
         mac[WL_MAC_ADDR_LENGTH - 2], 
         mac[WL_MAC_ADDR_LENGTH - 1]};
 
+    SuplaDevice.setDigitalWriteFuncImpl(&customDigitalWrite);
+    SuplaDevice.setDigitalReadFuncImpl(&customDigitalRead);
+
+    SuplaDevice.setName("4xRS");
+
     SuplaDevice.begin(GUID,              // Global Unique Identifier 
         mac,               // Ethernet MAC address
         "svr9.supla.org",  // SUPLA server address
@@ -80,18 +85,37 @@ void connect_to_supla()
 
 void add_devices_to_supla()
 {
-    SuplaDevice.setDigitalWriteFuncImpl(&customDigitalWrite);
-    SuplaDevice.setDigitalReadFuncImpl(&customDigitalRead);
-
     SuplaDevice.addRollerShutterRelays(
         101, // Relay 1 (if shift register add 101) 
         102);
     SuplaDevice.setRollerShutterButtons(
         0, // channel
-        4, // button 1
-        5); // button 2`
+        5, // button 1
+        4); // button 2`
 
-    SuplaDevice.addRelay()
+   SuplaDevice.addRollerShutterRelays(
+        103, // Relay 1 (if shift register add 101) 
+        104);
+    SuplaDevice.setRollerShutterButtons(
+        1, // channel
+        2, // button 1
+        14); // button 2`
+
+    SuplaDevice.addRollerShutterRelays(
+        105, // Relay 1 (if shift register add 101) 
+        106);
+    SuplaDevice.setRollerShutterButtons(
+        2, // channel
+        12, // button 1
+        13); // button 2`
+
+   SuplaDevice.addRollerShutterRelays(
+        107, // Relay 1 (if shift register add 101) 
+        108);
+    SuplaDevice.setRollerShutterButtons(
+        3, // channel
+        3, // button 1
+        1); // button 2`
 
 }
 
