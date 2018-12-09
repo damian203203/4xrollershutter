@@ -32,7 +32,11 @@ struct ShiftRegisterWithMemoryState
     }
     int get(uint8_t pin)
     {
+<<<<<<< HEAD
         return memory_state[pin];
+=======
+        return mem[pin];
+>>>>>>> parent of 974e3f6... Working rollershutter
     }
 } shift_register_with_memory;
 
@@ -40,23 +44,50 @@ void customDigitalWrite(int channelNumber, uint8_t pin, uint8_t val)
 {
     if (pin > 100)
     {
-        shift_register_with_memory.set(pin - 101, val);
+        int shift_register_pin = pin - 101;
+
+        Serial.print("Shift regiter write: channelNumber: ");
+        Serial.print(channelNumber);
+        Serial.print(", PIN: ");
+        Serial.print(pin);
+        Serial.print(", value: ");
+        Serial.print(val);
+
+        Serial.print(", Shift register PIN: ");
+        Serial.print(shift_register_pin);
+
+        shift_register_with_memory.set(shift_register_pin, val);
     }
     else
     {
+        Serial.print("Standard digital write: channelNumber: ");
+        Serial.print(channelNumber);
+        Serial.print(", PIN: ");
+        Serial.print(pin);
+        Serial.print(", value: ");
+        Serial.print(val);
         digitalWrite(pin, val);
     }
 }
 
 int customDigitalRead(int channelNumber, uint8_t pin)
 {
+    Serial.print("Digital read called, channelNumber: ");
+    Serial.print(channelNumber);
+    Serial.print(", PIN: ");
+    Serial.print(pin);
+    Serial.print("\n");
     if (pin > 100)
     {
-        return shift_register_with_memory.get(pin - 101);
+        Serial.print("Digital read from Shift register");
+        return shift_register_with_memory.get(pin);
     }
     else
     {
-        return digitalRead(pin);
+        int ret = digitalRead(pin);
+        Serial.print("return: ");
+        Serial.print(ret);
+        return ret;
     }
 }
 
@@ -124,7 +155,20 @@ void setup()
     Serial.begin(115200);
     delay(10);
 
+<<<<<<< HEAD
     add_devices_to_supla();
+=======
+    SuplaDevice.setDigitalWriteFuncImpl(&customDigitalWrite);
+    SuplaDevice.setDigitalReadFuncImpl(&customDigitalRead);
+
+    SuplaDevice.addRollerShutterRelays(14, 2);
+    SuplaDevice.setRollerShutterButtons(0, 13, 12);
+
+//    SuplaDevice.addRollerShutterRelays(101, 102);
+//    SuplaDevice.setRollerShutterButtons(1, 4, 5);
+
+
+>>>>>>> parent of 974e3f6... Working rollershutter
     connect_to_supla();
 }
 
