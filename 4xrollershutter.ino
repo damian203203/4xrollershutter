@@ -6,33 +6,25 @@
 #include <ShiftRegister74HC595.h>
 
 WiFiClient client;
+ShiftRegister74HC595 shift_register(1, 15, 16, 0); 
 
-struct ShiftRegisterWithMemoryState
+struct ShiftRegisterWrapper
 {
-    static const uint8_t NR_OF_REGISTERS = 1;//ustaw
-    static const uint8_t DATA_PIN = 15;//ustaw
-    static const uint8_t CLOCK_PIN = 16;//ustaw
-    static const uint8_t LATCH_PIN = 1;//ustaw
-
-    static const uint8_t MEMORY_STATE_SIZE = NR_OF_REGISTERS * 8;
-    int memory_state[MEMORY_STATE_SIZE];
-    
-    ShiftRegister74HC595 shift_register = ShiftRegister74HC595(
-        NR_OF_REGISTERS, DATA_PIN, CLOCK_PIN, LATCH_PIN);
-
-    ShiftRegisterWithMemoryState()
+    int mem[8];
+    ShiftRegisterWrapper()
     {
-        for (int i=0; i < MEMORY_STATE_SIZE; i++)
-            memory_state[i] = 0;
+        for (int i=0; i < 8; i++)
+            mem[i] = 0;
     }
     void set(uint8_t pin, uint8_t val)
     {
         shift_register.set(pin, val);
-        memory_state[pin] = val;
+        mem[pin] = val;
     }
     int get(uint8_t pin)
     {
-        return memory_state[pin];
+        int val = mem[pin];
+        return val;
     }
 } shift_register_with_memory;
 
@@ -71,11 +63,6 @@ void connect_to_supla()
         mac[WL_MAC_ADDR_LENGTH - 2], 
         mac[WL_MAC_ADDR_LENGTH - 1]};
 
-    SuplaDevice.setDigitalWriteFuncImpl(&customDigitalWrite);
-    SuplaDevice.setDigitalReadFuncImpl(&customDigitalRead);
-
-    SuplaDevice.setName("4xRS");
-
     SuplaDevice.begin(GUID,              // Global Unique Identifier 
         mac,               // Ethernet MAC address
         "svr9.supla.org",  // SUPLA server address
@@ -83,48 +70,25 @@ void connect_to_supla()
         "7126");               // Location Password
 }
 
-void add_devices_to_supla()
-{
-    SuplaDevice.addRollerShutterRelays(
-        101, // Relay 1 (if shift register add 101) 
-        102);
-    SuplaDevice.setRollerShutterButtons(
-        0, // channel
-        5, // button 1
-        4); // button 2`
-
-   SuplaDevice.addRollerShutterRelays(
-        103, // Relay 1 (if shift register add 101) 
-        104);
-    SuplaDevice.setRollerShutterButtons(
-        1, // channel
-        2, // button 1
-        14); // button 2`
-
-    SuplaDevice.addRollerShutterRelays(
-        105, // Relay 1 (if shift register add 101) 
-        106);
-    SuplaDevice.setRollerShutterButtons(
-        2, // channel
-        12, // button 1
-        13); // button 2`
-
-   SuplaDevice.addRollerShutterRelays(
-        107, // Relay 1 (if shift register add 101) 
-        108);
-    SuplaDevice.setRollerShutterButtons(
-        3, // channel
-        3, // button 1
-        1); // button 2`
-
-}
-
 void setup() 
 {
     Serial.begin(115200);
     delay(10);
 
-    add_devices_to_supla();
+    SuplaDevice.setDigitalWriteFuncImpl(&customDigitalWrite);
+    SuplaDevice.setDigitalReadFuncImpl(&customDigitalRead);
+
+    SuplaDevice.addRollerShutterRelays(101, 102);
+    SuplaDevice.setRollerShutterButtons(0, 4, 5);
+
+    SuplaDevice.addRollerShutterRelays(103, 104);
+    SuplaDevice.setRollerShutterButtons(1, 14, 2);
+
+    SuplaDevice.addRollerShutterRelays(105, 106);
+    SuplaDevice.setRollerShutterButtons(2, 13, 12);
+
+    SuplaDevice.addRollerShutterRelays(107, 108);
+    SuplaDevice.setRollerShutterButtons(3, 1, 3);
     connect_to_supla();
 }
 
